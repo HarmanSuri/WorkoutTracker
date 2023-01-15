@@ -18,8 +18,6 @@ app.get('/api', (req, res) => {
 
 	const dataJson = JSON.parse(data);
 
-	writeFileSync('./count.txt', newCount.toString());
-
 	res.send(dataJson);
 });
 
@@ -42,6 +40,22 @@ app.post('/api/:id', (req, res) => {
 	dataJson.push(newExercise)
 
 	writeFileSync('../workout-data.json', JSON.stringify(dataJson));
+});
+
+app.delete('/api/:id', (req, res) => {
+	const {id} = req.params;
+
+	const data = readFileSync('../workout-data.json', 'utf-8');
+
+	const dataJson = JSON.parse(data);
+	
+	const newData = [...dataJson];
+
+	const index = dataJson.findIndex((exercise) => exercise.id === id);
+
+	newData.splice(index, 1);
+
+	writeFileSync('../workout-data.json', JSON.stringify(newData));
 });
 
 const port = 5000;

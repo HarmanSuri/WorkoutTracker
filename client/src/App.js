@@ -7,7 +7,7 @@ import EditableRow from './components/EditableRow';
 function App() {
 
   const createExercise = ((newExercise) => {
-    fetch(`/api/${nanoid()}`, {
+    fetch(`/api/${newExercise.id}`, {
       method: "POST",
       headers: {
         "Accept": "application/json",
@@ -29,6 +29,14 @@ function App() {
         setExercises(data)
       }
     )
+  });
+
+  const deleteExercise = ((exerciseId) => {
+    fetch(`/api/${exerciseId}`,{
+      method:"DELETE"
+    }).then(
+      response => response.json()
+    ).then(getExercises())
   });
 
   useEffect(() => {
@@ -138,13 +146,7 @@ function App() {
   };
   
   const handleDeleteClick = (exerciseId) => {
-    const newExercises = [...exercises];
-
-    const index = exercises.findIndex((exercise) => exercise.id === exerciseId);
-
-    newExercises.splice(index, 1);
-
-    setExercises(newExercises)
+    deleteExercise(exerciseId);
   };
 
   return (
