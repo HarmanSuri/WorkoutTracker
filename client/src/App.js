@@ -1,25 +1,40 @@
 import React, {useEffect, useState, Fragment} from 'react';
 import {nanoid} from 'nanoid';
 import './App.css';
-import data from "./workout-data.json"
 import ReadOnlyRow from './components/ReadOnlyRow';
 import EditableRow from './components/EditableRow';
 
-
 function App() {
-  const [backendData, setBackendData] = useState([{}]);
-  
-  useEffect(() => {
+
+  const createExercise = ((newExercise) => {
+    fetch(`/api/${nanoid()}`, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body:JSON.stringify(newExercise)
+    }).then(
+      response => response.json()
+    ).then(getExercises())
+  });
+
+  const [exercises, setExercises] = useState([{}]);
+
+  const getExercises = (() => {
     fetch("/api").then(
       response => response.json()
     ).then(
       data => {
-        setBackendData(data)
+        setExercises(data)
       }
     )
+  });
+
+  useEffect(() => {
+    getExercises()
   }, []);
 
-  const [exercises, setExercises] = useState(data);
   const [addFormData, setAddFormData] = useState({
     exerciseName: "",
     set1: "",
@@ -76,9 +91,7 @@ function App() {
       set4: addFormData.set4,
       set5: addFormData.set5
     };
-
-    const newExercises = [...exercises, newExercise];
-    setExercises(newExercises);
+    createExercise(newExercise);
   };
 
   const handleEditFormSubmit = (event) => {
@@ -136,13 +149,6 @@ function App() {
 
   return (
     <div className="App">
-
-      {(typeof backendData.count === 'undefined') ? (
-        <p>Loading...</p>
-      ): (
-        <p>{backendData.count}</p>
-      )}
-
       <form onSubmit={handleEditFormSubmit}>
         <table border={1}>
           <thead>

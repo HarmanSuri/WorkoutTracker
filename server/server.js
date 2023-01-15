@@ -1,17 +1,47 @@
 const { readFileSync, writeFileSync } = require('fs');
 
+const cors = require('cors');
 const express = require('express');
 const app = express();
 
-app.get('/api', (req, res) => {
-	const count = readFileSync('./count.txt', 'utf-8');
-	console.log('count ', count);
+app.use(express.json());
 
-	const newCount = parseInt(count) + 1;
+app.use(
+	cors({
+		origin: 'http://localhost:3000',
+		credentials: true
+	})
+);
+
+app.get('/api', (req, res) => {
+	const data = readFileSync('../workout-data.json', 'utf-8');
+
+	const dataJson = JSON.parse(data);
 
 	writeFileSync('./count.txt', newCount.toString());
 
-	res.json({"count": newCount});
+	res.send(dataJson);
+});
+
+app.post('/api/:id', (req, res) => {
+	const {id} = req.params;
+
+	const newExercise = {
+		id: id,
+		exerciseName: req.body.exerciseName,
+		set1: req.body.set1,
+		set2: req.body.set2,
+		set3: req.body.set3,
+		set4: req.body.set4,
+		set5: req.body.set5
+	};
+
+	const data = readFileSync('../workout-data.json', 'utf-8');
+
+	const dataJson = JSON.parse(data);
+	dataJson.push(newExercise)
+
+	writeFileSync('../workout-data.json', JSON.stringify(dataJson));
 });
 
 const port = 5000;
