@@ -42,8 +42,18 @@ app.post('/api/:id', (req, res) => {
 	writeFileSync('../workout-data.json', JSON.stringify(dataJson));
 });
 
-app.delete('/api/:id', (req, res) => {
+app.put('/api/:id', (req, res) => {
 	const {id} = req.params;
+
+	const editedExercise = {
+		id: id,
+		exerciseName: req.body.exerciseName,
+		set1: req.body.set1,
+		set2: req.body.set2,
+		set3: req.body.set3,
+		set4: req.body.set4,
+		set5: req.body.set5
+	};
 
 	const data = readFileSync('../workout-data.json', 'utf-8');
 
@@ -53,6 +63,22 @@ app.delete('/api/:id', (req, res) => {
 
 	const index = dataJson.findIndex((exercise) => exercise.id === id);
 
+	newData[index] = editedExercise;
+
+	writeFileSync('../workout-data.json', JSON.stringify(newData));
+})
+
+app.delete('/api/:id', (req, res) => {
+	const {id} = req.params;
+	
+	const data = readFileSync('../workout-data.json', 'utf-8');
+
+	const dataJson = JSON.parse(data);
+	
+	const newData = [...dataJson];
+
+	const index = dataJson.findIndex((exercise) => exercise.id === id);
+	
 	newData.splice(index, 1);
 
 	writeFileSync('../workout-data.json', JSON.stringify(newData));

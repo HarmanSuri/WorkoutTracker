@@ -19,6 +19,19 @@ function App() {
     ).then(getExercises())
   });
 
+  const editExercise = ((newExercise) => {
+    fetch(`/api/${newExercise.id}`, {
+      method: "PUT",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body:JSON.stringify(newExercise)
+    }).then(
+      response => response.json()
+    ).then(getExercises())
+  });
+
   const [exercises, setExercises] = useState([{}]);
 
   const getExercises = (() => {
@@ -106,7 +119,7 @@ function App() {
     event.preventDefault();
 
     const editedExercise = {
-      id: editExerciseId,
+      id: editExerciseId, 
       exerciseName: editFormData.exerciseName,
       set1: editFormData.set1,
       set2: editFormData.set2,
@@ -115,14 +128,8 @@ function App() {
       set5: editFormData.set5
     };
 
-    const newExercises = [...exercises];
-    
-    const index = exercises.findIndex((exercise) => exercise.id === editExerciseId);
-
-    newExercises[index] = editedExercise;
-
-    setExercises(newExercises);
     setEditExerciseId(null);
+    editExercise(editedExercise)
   };
 
   const handleEditClick = (event, exercise) => {
